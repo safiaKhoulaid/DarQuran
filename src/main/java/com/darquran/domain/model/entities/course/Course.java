@@ -35,6 +35,7 @@ public class Course {
 
     private String miniature;
 
+    @Builder.Default
     private boolean isPublic = false;
 
     @Enumerated(EnumType.STRING)
