@@ -25,7 +25,6 @@ public class CourseRequest {
 
     private String miniature;
 
-
     private String slug;
 
     @Builder.Default
