@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface AdminRepository extends JpaRepository<Admin, String> {
 
-    List<Admin> findAllBySection(Section section);
+    List<Admin> findBySection(Section section);
 }
