@@ -1,6 +1,7 @@
 package com.darquran.domain.model.entities.live;
 
-import com.darquran.domain.model.entities.users.Teacher;
+import com.darquran.domain.model.entities.users.User;
+import com.darquran.domain.model.enums.Section;
 import com.darquran.domain.model.enums.live.LiveAccessType;
 import com.darquran.domain.model.enums.live.LiveSessionStatus;
 import jakarta.persistence.*;
@@ -86,9 +87,16 @@ public class LiveSession {
 
     private LocalDateTime updatedAt;
 
+    /**
+     * Section du professeur (HOMME/FEMME). Restreint l'accès au live : seuls les utilisateurs de la même section peuvent regarder.
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Section section;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
-    private Teacher teacher;
+    private User user;
 
     @OneToMany(mappedBy = "liveSession", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("createdAt ASC")

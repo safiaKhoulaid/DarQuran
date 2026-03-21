@@ -1,4 +1,4 @@
-package com.darquran.application.dto.auth.login.register;
+package com.darquran.application.dto.auth.register;
 
 import lombok.Builder;
 import lombok.Getter;

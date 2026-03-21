@@ -1,5 +1,6 @@
 package com.darquran.application.dto.live;
 
+import com.darquran.domain.model.enums.Section;
 import com.darquran.domain.model.enums.live.LiveAccessType;
 import com.darquran.domain.model.enums.live.LiveSessionStatus;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,8 @@ public class LiveSessionResponse {
     private String title;
     private String description;
     private String streamKey;
+    /** URL RTMP pour envoyer le flux (OBS, etc.) : serveur + application, ex. rtmp://localhost:1935/live */
+    private String rtmpIngestUrl;
     private String hlsPlaybackUrl;
     private LiveSessionStatus status;
     private LiveAccessType accessType;
@@ -31,7 +34,9 @@ public class LiveSessionResponse {
     private LocalDateTime endedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String teacherId;
-    private String teacherName;
+    private String userId;
+    private String userName;
+    /** Section du professeur : accès réservé aux utilisateurs de la même section (HOMME/FEMME). */
+    private Section section;
     private int commentCount;
 }

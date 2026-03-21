@@ -1,0 +1,63 @@
+spring:
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/DarQuran}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  mail:
+    host: ${MAIL_HOST:smtp-relay.brevo.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  logging:
+    level:
+      root: INFO
+      org.springframework.web: DEBUG
+      org.springframework.security: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver: DEBUG
+twilio:
+  account_sid: ${TWILIO_ACCOUNT_SID}
+  auth_token: ${TWILIO_AUTH_TOKEN}
+  phone_number: ${TWILIO_PHONE_NUMBER}
+
+app:
+  mail:
+    from: ${APP_MAIL_FROM:no-reply@darquran.local}
+  # URL du front (optionnel) pour le lien dans l'email "live démarré"
+  front-url: ${FRONT_URL:}
+  live:
+    # Base URL pour les flux HLS (media-server NGINX) - lecture côté viewers
+    hls-base-url: ${HLS_BASE_URL:http://localhost:8081/hls}
+    # URL RTMP pour envoyer le flux (OBS) - lancer la caméra
+    rtmp-server-url: ${RTMP_SERVER_URL:rtmp://localhost:1935/live}

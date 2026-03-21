@@ -20,19 +20,21 @@ public interface LiveSessionMapper {
     @Mapping(target = "notificationSent", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "teacher", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "comments", ignore = true)
     LiveSession toEntity(LiveSessionRequest request);
 
-    @Mapping(target = "teacherId", source = "teacher.id")
-    @Mapping(target = "teacherName", source = "teacher", qualifiedByName = "teacherFullName")
+    @Mapping(target = "userId", source = "user.id")
+    @Mapping(target = "userName", source = "user", qualifiedByName = "userFullName")
     @Mapping(target = "commentCount", expression = "java(entity.getComments() != null ? entity.getComments().size() : 0)")
+    @Mapping(target = "rtmpIngestUrl", ignore = true)
     LiveSessionResponse toResponse(LiveSession entity);
 
-    @Named("teacherFullName")
-    default String teacherFullName(com.darquran.domain.model.entities.users.Teacher teacher) {
-        if (teacher == null) return null;
-        return teacher.getPrenom() + " " + teacher.getNom();
+    @Named("userFullName")
+    default String userFullName(com.darquran.domain.model.entities.users.User user) {
+        if (user == null) return null;
+        return user.getPrenom() + " " + user.getNom();
     }
 
     @Mapping(target = "id", ignore = true)
@@ -44,7 +46,8 @@ public interface LiveSessionMapper {
     @Mapping(target = "notificationSent", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "teacher", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "section", ignore = true)
     @Mapping(target = "comments", ignore = true)
     void updateEntityFromRequest(LiveSessionRequest request, @MappingTarget LiveSession entity);
 }

@@ -19,7 +19,6 @@ import java.util.List;
 @Builder
 
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;

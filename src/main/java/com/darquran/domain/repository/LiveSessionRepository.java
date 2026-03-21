@@ -1,6 +1,7 @@
 package com.darquran.domain.repository;
 
 import com.darquran.domain.model.entities.live.LiveSession;
+import com.darquran.domain.model.enums.Section;
 import com.darquran.domain.model.enums.live.LiveAccessType;
 import com.darquran.domain.model.enums.live.LiveSessionStatus;
 import org.springframework.data.domain.Page;
@@ -24,7 +25,10 @@ public interface LiveSessionRepository extends JpaRepository<LiveSession, String
             LocalDateTime end,
             LiveSessionStatus status);
 
-    List<LiveSession> findByTeacherIdAndStatus(String teacherId, LiveSessionStatus status);
+    List<LiveSession> findByUser_IdAndStatus(String userId, LiveSessionStatus status);
+
+    Page<LiveSession> findByStatusAndAccessTypeAndSection(
+            LiveSessionStatus status, LiveAccessType accessType, Section section, Pageable pageable);
 
     boolean existsByStreamKey(String streamKey);
 }

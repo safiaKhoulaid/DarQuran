@@ -1,0 +1,43 @@
+# Profil production : utilisé quand on lance avec -Dspring.profiles.active=prod
+# ou SPRING_PROFILES_ACTIVE=prod
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/DarQuran}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:redis}
+      port: ${SPRING_REDIS_PORT:6379}
+  jpa:
+    hibernate:
+      # update = crée/met à jour les tables au démarrage. Pour figer le schéma, passer à "validate"
+      ddl-auto: update
+    show-sql: false
+  mail:
+    host: ${SPRING_MAIL_HOST:}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME:}
+    password: ${SPRING_MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+
+app:
+  mail:
+    from: ${APP_MAIL_FROM:}
+  front-url: ${FRONT_URL:}
+  live:
+    hls-base-url: ${HLS_BASE_URL:http://media-server:80/hls}
+    rtmp-server-url: ${RTMP_SERVER_URL:rtmp://media-server:1935/live}

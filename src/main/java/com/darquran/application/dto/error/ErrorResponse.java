@@ -1,4 +1,4 @@
-package com.darquran.application.dto.auth.error;
+package com.darquran.application.dto.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,0 +1,95 @@
+version: '3.8'
+
+services:
+  # 1. Base de Données (PostgreSQL)
+  postgres:
+    image: postgres:15
+    container_name: darquran_db
+    restart: always
+    environment:
+      POSTGRES_DB: DarQuran
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-1234}
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Cache & Refresh Token (Redis)
+  redis:
+    image: redis:alpine
+    container_name: darquran_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 3. Backend Spring Boot (API DarQuran)
+  backend:
+    build: .
+    container_name: darquran_backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/DarQuran
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-1234}
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: "6379"
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      APP_MAIL_FROM: ${APP_MAIL_FROM:-}
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST:-}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME:-}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD:-}
+      FRONT_URL: ${FRONT_URL:-}
+      # URLs utilisées dans les réponses API (clients = navigateur/OBS). En prod, définir dans .env avec l’IP/domaine du serveur.
+      HLS_BASE_URL: ${HLS_BASE_URL:-http://localhost:8081/hls}
+      RTMP_SERVER_URL: ${RTMP_SERVER_URL:-rtmp://localhost:1935/live}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # 4. Serveur Streaming (NGINX RTMP)
+  media-server:
+    image: tiangolo/nginx-rtmp
+    container_name: darquran_media
+    restart: always
+    ports:
+      - "1935:1935" # Port RTMP (OBS)
+      - "8081:80"   # Port HTTP (HLS pour le front)
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+
+  # 5. (Optionnel) Bridge WebSocket → RTMP pour streaming navigateur sans OBS
+  streaming-bridge:
+    build: ./streaming-bridge
+    container_name: darquran_streaming_bridge
+    restart: always
+    ports:
+      - "9090:9090"
+    environment:
+      WS_PORT: "9090"
+      RTMP_URL: rtmp://media-server:1935/live
+    depends_on:
+      - media-server
+    profiles:
+      - with-bridge
+
+volumes:
+  postgres_data:
+  redis_data:

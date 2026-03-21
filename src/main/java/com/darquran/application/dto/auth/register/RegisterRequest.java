@@ -1,4 +1,4 @@
-package com.darquran.application.dto.auth.login.register;
+package com.darquran.application.dto.auth.register;
 
 import com.darquran.domain.model.enums.Role;
 import com.darquran.domain.model.enums.Section;

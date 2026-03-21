@@ -1,4 +1,6 @@
 package com.darquran.domain.model.enums;
 
-public class Section {
+public enum Section {
+    HOMME,
+    FEMME
 }

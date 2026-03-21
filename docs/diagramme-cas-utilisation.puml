@@ -1,0 +1,140 @@
+@startuml Diagramme de cas d'utilisation - DarQuran
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam roundCorner 8
+skinparam defaultFontName Arial
+skinparam actorStyle awesome
+skinparam usecaseFontSize 11
+skinparam packageStyle rectangle
+
+title Diagramme de cas d'utilisation - DarQuran\n(acteurs, cas d'usage, include/extend)
+
+left to right direction
+
+' ========== ACTEURS ==========
+actor "Super Admin" as superadmin #LightBlue
+actor "Admin Section" as admin #LightGreen
+actor "Enseignant" as enseignant #Gold
+actor "Élève" as eleve #LightCoral
+actor "Parent" as parent #Plum
+actor "Visiteur\n(Public)" as visiteur #LightGray
+
+' ========== SYSTÈME ==========
+rectangle "Système DarQuran" as system {
+
+  ' --- Authentification (centre) ---
+  usecase "S'authentifier" as UC_Auth
+  usecase "Se connecter" as UC_Login
+  usecase "S'inscrire" as UC_Register
+  usecase "Se déconnecter" as UC_Logout
+  usecase "Réinitialiser\nle mot de passe" as UC_ResetPwd
+  usecase "Demander une réinitialisation" as UC_ForgotPwd
+
+  UC_Auth ..> UC_Login : <<include>>
+  UC_Auth ..> UC_Register : <<include>>
+  UC_ResetPwd ..> UC_ForgotPwd : <<include>>
+  UC_Auth <.. UC_Logout : <<include>>
+
+  ' --- Gestion utilisateurs (côté admin) ---
+  usecase "Gérer les utilisateurs" as UC_ManageUsers
+  usecase "Gérer les admins" as UC_ManageAdmins
+  usecase "Gérer les enseignants" as UC_ManageTeachers
+  usecase "Gérer les élèves" as UC_ManageStudents
+
+  UC_ManageUsers ..> UC_ManageAdmins : <<include>>
+  UC_ManageUsers ..> UC_ManageTeachers : <<include>>
+  UC_ManageUsers ..> UC_ManageStudents : <<include>>
+
+  ' --- Sessions live ---
+  usecase "Gérer les sessions live" as UC_ManageLive
+  usecase "Créer une session live" as UC_CreateLive
+  usecase "Modifier une session live" as UC_UpdateLive
+  usecase "Supprimer une session live" as UC_DeleteLive
+  usecase "Démarrer le direct" as UC_StartLive
+  usecase "Arrêter le direct" as UC_EndLive
+  usecase "Consulter les sessions\n(de ma section)" as UC_ViewLiveSection
+  usecase "Consulter les sessions\npubliques" as UC_ViewLivePublic
+  usecase "Commenter en direct" as UC_CommentLive
+
+  UC_ManageLive ..> UC_CreateLive : <<include>>
+  UC_ManageLive ..> UC_UpdateLive : <<include>>
+  UC_ManageLive ..> UC_DeleteLive : <<include>>
+  UC_ManageLive ..> UC_StartLive : <<include>>
+  UC_ManageLive ..> UC_EndLive : <<include>>
+  UC_ViewLiveSection ..> UC_CommentLive : <<include>>
+  UC_ViewLivePublic ..> UC_CommentLive : <<include>>
+
+  ' --- Cours et contenus ---
+  usecase "Gérer les cours" as UC_ManageCourses
+  usecase "Gérer les leçons" as UC_ManageLessons
+  usecase "Gérer les ressources" as UC_ManageResources
+  usecase "Consulter les cours\net leçons" as UC_ViewCourses
+
+  UC_ManageCourses ..> UC_ManageLessons : <<include>>
+  UC_ManageLessons ..> UC_ManageResources : <<include>>
+
+  ' --- École et planning ---
+  usecase "Gérer les salles" as UC_ManageRooms
+  usecase "Gérer les créneaux\nhoraires" as UC_ManageSlots
+  usecase "Gérer les inscriptions" as UC_ManageEnrollments
+  usecase "Consulter l'emploi du temps" as UC_ViewSchedule
+
+  ' --- Dashboard enseignant ---
+  usecase "Consulter mon dashboard" as UC_DashboardTeacher
+  usecase "Signaler une absence\n(élève)" as UC_MarkAbsence
+  usecase "Saisir une note" as UC_AddGrade
+  usecase "Consulter mes classes\net créneaux" as UC_ViewMyClasses
+
+  UC_DashboardTeacher ..> UC_ViewMyClasses : <<include>>
+  UC_DashboardTeacher ..> UC_MarkAbsence : <<include>>
+  UC_DashboardTeacher ..> UC_AddGrade : <<include>>
+  UC_DashboardTeacher ..> UC_ManageLive : <<include>>
+
+  ' --- Élève ---
+  usecase "Consulter mes cours\net inscriptions" as UC_ViewMyCourses
+}
+
+' ========== LIENS ACTEURS <-> CAS D'USAGE ==========
+
+' Super Admin
+superadmin --> UC_Auth
+superadmin --> UC_ManageUsers
+superadmin --> UC_ManageLive
+superadmin --> UC_ManageCourses
+superadmin --> UC_ManageRooms
+superadmin --> UC_ManageSlots
+superadmin --> UC_ManageEnrollments
+
+' Admin Section
+admin --> UC_Auth
+admin --> UC_ManageUsers
+admin --> UC_ManageLive
+admin --> UC_ManageCourses
+admin --> UC_ManageRooms
+admin --> UC_ManageSlots
+admin --> UC_ManageEnrollments
+
+' Enseignant
+enseignant --> UC_Auth
+enseignant --> UC_ManageLive
+enseignant --> UC_DashboardTeacher
+enseignant --> UC_ViewLiveSection
+enseignant --> UC_CommentLive
+enseignant --> UC_ViewCourses
+
+' Élève
+eleve --> UC_Auth
+eleve --> UC_ViewLiveSection
+eleve --> UC_CommentLive
+eleve --> UC_ViewCourses
+eleve --> UC_ViewMyCourses
+eleve --> UC_ViewSchedule
+
+' Parent (accès limité dans le système actuel)
+parent --> UC_Auth
+
+' Visiteur (public, sans authentification)
+visiteur --> UC_ViewLivePublic
+visiteur --> UC_CommentLive
+
+@enduml

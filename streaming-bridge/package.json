@@ -1,0 +1,17 @@
+{
+  "name": "darquran-streaming-bridge",
+  "version": "1.0.0",
+  "description": "WebSocket to RTMP bridge for browser-based live streaming (No-OBS)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.3",
+    "ws": "^8.18.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

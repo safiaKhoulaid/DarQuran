@@ -1,4 +1,10 @@
 package com.darquran.application.dto.auth.refreshToken;
 
-public class refreshTokenRequest {
+
+import lombok.Getter;
+
+@Getter
+public class RefreshTokenRequest {
+
+    private String refreshToken ;
 }
