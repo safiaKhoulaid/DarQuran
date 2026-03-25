@@ -28,12 +28,32 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - name: Validate required secrets
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.DO_HOST }}" ]; then
+            echo "Missing required secret: DO_HOST (droplet IP / domain)"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DO_SSH_USER }}" ]; then
+            echo "Missing required secret: DO_SSH_USER"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DO_SSH_PASSWORD }}" ]; then
+            echo "Missing required secret: DO_SSH_PASSWORD (SSH password)"
+            exit 1
+          fi
+          if [ -z "${{ secrets.DO_APP_PATH }}" ]; then
+            echo "Missing required secret: DO_APP_PATH (ex: /opt/darquran)"
+            exit 1
+          fi
+
       - name: SSH deploy + docker compose
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.DO_HOST }}
           username: ${{ secrets.DO_SSH_USER }}
-          key: ${{ secrets.DO_SSH_KEY }}
+          password: ${{ secrets.DO_SSH_PASSWORD }}
           script_stop: true
           script: |
             set -euo pipefail
