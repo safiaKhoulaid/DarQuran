@@ -24,6 +24,7 @@ jobs:
         run: mvn -B test
 
   deploy:
+    environment:  DO_HOST
     name: Deploy on DigitalOcean via SSH
     runs-on: ubuntu-latest
     needs: test
