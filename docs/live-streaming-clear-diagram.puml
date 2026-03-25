@@ -1,0 +1,130 @@
+@startuml DarQuran_Live_Streaming_Clear
+
+!define LIGHTBLUE #E1F5FE
+!define LIGHTGREEN #E8F5E8
+!define LIGHTYELLOW #FFF9C4
+!define LIGHTPINK #FCE4EC
+!define LIGHTGRAY #F5F5F5
+
+title 🎥 DarQuran Live Streaming - Flux Simplifié
+
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam rectangle {
+    BackgroundColor LIGHTGRAY
+    BorderColor #666666
+    FontSize 12
+}
+
+' === ACTEURS ===
+actor Enseignant as teacher #lightgreen
+actor Élève as student #lightblue
+
+' === ZONES FONCTIONNELLES ===
+package "Frontend" LIGHTBLUE {
+    [Angular App] as frontend
+    [OBS Studio] as obs
+}
+
+package "Infrastructure Streaming" LIGHTYELLOW {
+    [NGINX RTMP\nPort 1935] as nginx_rtmp
+    [NGINX HTTP\nPort 8081] as nginx_http
+    [Stockage HLS\n/tmp/hls/] as hls_storage
+}
+
+package "Backend API" LIGHTGREEN {
+    [Spring Boot\nPort 8080] as api
+    [UserNotificationService] as notification
+    [LiveSessionService] as live_service
+}
+
+package "Persistance" LIGHTPINK {
+    [PostgreSQL\nPort 5433] as db
+    [Redis Cache\nPort 6379] as cache
+    [MinIO S3\nPort 9000] as storage
+}
+
+' === FLUX PRINCIPAL ===
+
+' 1. Création session
+teacher -> frontend : 1. Créer session live
+frontend -> api : POST /api/live/sessions
+api -> db : Sauvegarder session\n(SCHEDULED)
+api -> frontend : URLs générées\n(RTMP + HLS)
+
+' 2. Configuration streaming
+teacher -> obs : 2. Configuration OBS\nrtmp://server:1935/live/{key}
+obs -> nginx_rtmp : 3. Flux RTMP\n(H.264 + AAC)
+nginx_rtmp -> hls_storage : 4. Conversion HLS\n(.m3u8 + .ts)
+
+' 3. Démarrage live
+teacher -> frontend : 5. Démarrer live
+frontend -> api : POST /sessions/{id}/start
+api -> live_service : startStream()
+live_service -> db : Update: LIVE + timestamp
+live_service -> notification : dispatchLiveStarted()
+notification -> teacher : 6. Notifications envoyées
+
+' 4. Visualisation
+student -> frontend : 7. Accéder au live
+frontend -> api : GET /sessions (filtré)
+api -> frontend : Sessions autorisées
+frontend -> nginx_http : 8. Lecture HLS\n/hls/{key}.m3u8
+nginx_http -> hls_storage : Récupération segments
+hls_storage -> nginx_http : Flux .ts + playlist
+nginx_http -> frontend : 9. Diffusion vidéo
+
+' 5. Chat interaction
+student -> frontend : 10. Poster commentaire
+frontend -> api : POST /sessions/{id}/comments
+api -> db : Persistance commentaire
+frontend -> api : 11. Polling commentaires
+api -> db : Récupération messages
+db -> api : Liste comments
+api -> frontend : Updates chat
+
+' 6. Fin de session
+teacher -> obs : 12. Arrêt streaming
+obs -> nginx_rtmp : Fermeture RTMP
+teacher -> frontend : Terminer session
+frontend -> api : POST /sessions/{id}/end
+api -> live_service : endStream()
+live_service -> db : Update: ENDED
+nginx_rtmp -> storage : 13. Upload MP4\n(si enregistrement)
+
+' === NOTES EXPLICATIVES ===
+note top of nginx_rtmp
+  **NGINX RTMP**
+  • Reçoit flux OBS
+  • Convertit en HLS
+  • Segments 1 seconde
+end note
+
+note bottom of api
+  **Sécurité & Permissions**
+  • JWT Authentication
+  • Rôles: ADMIN/ENSEIGNANT/ÉLÈVE
+  • Sections: HOMME/FEMME
+  • Access: INTERNAL/EXTERNAL
+end note
+
+note right of db
+  **Types de Sessions**
+  SCHEDULED → LIVE → ENDED
+
+  **Access Types**
+  • EXTERNAL: Public
+  • INTERNAL: Section only
+end note
+
+legend bottom
+  |= Étape |= Description |= Technologie |
+  | 1-2 | Configuration | Angular + OBS |
+  | 3-4 | Streaming | RTMP → HLS |
+  | 5-6 | Activation | Spring Boot API |
+  | 7-9 | Diffusion | HLS Player |
+  | 10-11 | Chat | REST API |
+  | 12-13 | Clôture | Recording |
+end legend
+
+@enduml

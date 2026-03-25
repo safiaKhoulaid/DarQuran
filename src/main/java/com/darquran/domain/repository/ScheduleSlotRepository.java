@@ -16,5 +16,7 @@ public interface ScheduleSlotRepository extends JpaRepository<ScheduleSlot, Stri
     List<ScheduleSlot> findByRoomIdAndTeacherId(String roomId, String teacherId);
 
     List<ScheduleSlot> findByTeacherIdAndCourseId(String teacherId, String courseId);
+
+    List<ScheduleSlot> findByCourseIdIn(java.util.List<String> courseIds);
 }
 

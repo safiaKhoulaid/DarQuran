@@ -32,7 +32,7 @@ public class AdminController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AdminResponse>> getAllBySection(@RequestParam(required = false) Section section) {
+    public ResponseEntity<List<AdminResponse>> getAllBySection(@RequestParam(name = "section", required = false) Section section) {
         return ResponseEntity.ok(adminService.getAllBySection(section));
     }
 

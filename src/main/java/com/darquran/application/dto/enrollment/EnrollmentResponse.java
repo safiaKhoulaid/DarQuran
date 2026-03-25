@@ -1,5 +1,7 @@
 package com.darquran.application.dto.enrollment;
 
+import com.darquran.domain.model.enums.courses.CourseLevel;
+import com.darquran.domain.model.enums.courses.CourseStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,9 @@ public class EnrollmentResponse {
     private String studentPrenom;
     private String courseId;
     private String courseTitle;
+    private CourseLevel courseLevel;
+    private CourseStatus courseStatus;
+    private String courseDescription;
     private LocalDateTime enrolledAt;
     private Boolean active;
 }

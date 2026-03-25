@@ -16,10 +16,19 @@ public interface StudentGradeMapper {
         return ((p != null ? p : "") + " " + (n != null ? n : "")).trim();
     }
 
+    static String buildTeacherName(com.darquran.domain.model.entities.school.StudentGrade grade) {
+        if (grade == null || grade.getTeacher() == null) return null;
+        String p = grade.getTeacher().getPrenom();
+        String n = grade.getTeacher().getNom();
+        if (p == null && n == null) return null;
+        return ((p != null ? p : "") + " " + (n != null ? n : "")).trim();
+    }
+
     @Mapping(target = "studentId", source = "student.id")
     @Mapping(target = "studentName", expression = "java(com.darquran.application.mapper.grade.StudentGradeMapper.buildStudentName(grade))")
     @Mapping(target = "courseId", source = "course.id")
     @Mapping(target = "courseTitle", source = "course.title")
     @Mapping(target = "teacherId", source = "teacher.id")
+    @Mapping(target = "teacherName", expression = "java(com.darquran.application.mapper.grade.StudentGradeMapper.buildTeacherName(grade))")
     StudentGradeResponse toResponse(StudentGrade grade);
 }

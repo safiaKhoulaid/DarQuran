@@ -30,7 +30,7 @@ public class TeacherController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeacherResponse>> getAllBySection(@RequestParam(required = false) Section section) {
+    public ResponseEntity<List<TeacherResponse>> getAllBySection(@RequestParam(name = "section", required = false) Section section) {
         return ResponseEntity.ok(teacherService.getAllBySection(section));
     }
 

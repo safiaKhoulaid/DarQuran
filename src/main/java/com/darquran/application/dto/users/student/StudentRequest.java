@@ -1,6 +1,8 @@
 package com.darquran.application.dto.users.student;
 
+import com.darquran.application.dto.valueobjects.AdresseRequest;
 import com.darquran.domain.model.enums.Section;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -44,5 +46,8 @@ public class StudentRequest {
     private LocalDate dateNaissance;
 
     private String photoUrl;
+
+    @Valid
+    private AdresseRequest adresse;
 }
 

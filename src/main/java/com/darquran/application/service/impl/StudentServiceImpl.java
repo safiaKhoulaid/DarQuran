@@ -9,6 +9,10 @@ import com.darquran.domain.model.enums.Role;
 import com.darquran.domain.model.enums.Section;
 import com.darquran.domain.model.valueobjects.Adresse;
 import com.darquran.domain.model.valueobjects.Password;
+import com.darquran.domain.repository.EnrollmentRepository;
+import com.darquran.domain.repository.LiveCommentRepository;
+import com.darquran.domain.repository.StudentAbsenceRepository;
+import com.darquran.domain.repository.StudentGradeRepository;
 import com.darquran.domain.repository.StudentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +30,10 @@ public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final PasswordEncoder passwordEncoder;
+    private final EnrollmentRepository enrollmentRepository;
+    private final StudentAbsenceRepository studentAbsenceRepository;
+    private final StudentGradeRepository studentGradeRepository;
+    private final LiveCommentRepository liveCommentRepository;
 
     @Override
     @Transactional
@@ -92,6 +100,13 @@ public class StudentServiceImpl implements StudentService {
         if (!studentRepository.existsById(id)) {
             throw new EntityNotFoundException("Élève introuvable avec l'id : " + id);
         }
+
+        // Nettoyage des dépendances pour éviter les erreurs FK.
+        enrollmentRepository.deleteAll(enrollmentRepository.findByStudentId(id));
+        studentAbsenceRepository.deleteAll(studentAbsenceRepository.findByStudentId(id));
+        studentGradeRepository.deleteAll(studentGradeRepository.findByStudentId(id));
+        liveCommentRepository.deleteAll(liveCommentRepository.findByAuthorId(id));
+
         studentRepository.deleteById(id);
     }
 }

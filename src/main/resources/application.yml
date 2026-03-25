@@ -6,7 +6,9 @@ spring:
 
   security:
     jwt:
-      secret-key: ${JWT_SECRET}
+      # Provide a default value to avoid "Could not resolve placeholder 'JWT_SECRET'" at startup.
+      # IMPORTANT: In production, set the JWT_SECRET environment variable to a strong secret.
+      secret-key: ${JWT_SECRET:change-me}
       expiration: 86400000
       refresh-token:
         expiration: 604800000
@@ -14,7 +16,7 @@ spring:
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/DarQuran}
     username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD}
+    password: ${DB_PASSWORD:1234}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -61,3 +63,13 @@ app:
     hls-base-url: ${HLS_BASE_URL:http://localhost:8081/hls}
     # URL RTMP pour envoyer le flux (OBS) - lancer la caméra
     rtmp-server-url: ${RTMP_SERVER_URL:rtmp://localhost:1935/live}
+  storage:
+    s3:
+      enabled: ${S3_ENABLED:false}
+      endpoint: ${S3_ENDPOINT:http://localhost:9000}
+      region: ${S3_REGION:us-east-1}
+      access-key: ${S3_ACCESS_KEY:minioadmin}
+      secret-key: ${S3_SECRET_KEY:minioadmin}
+      bucket: ${S3_BUCKET:darquran-media}
+      public-base-url: ${S3_PUBLIC_BASE_URL:http://localhost:9000/darquran-media}
+      max-file-size-bytes: ${S3_MAX_FILE_SIZE_BYTES:52428800}

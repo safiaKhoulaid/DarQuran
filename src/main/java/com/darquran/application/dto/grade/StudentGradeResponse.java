@@ -23,5 +23,6 @@ public class StudentGradeResponse {
     private LocalDate gradeDate;
     private String comment;
     private String teacherId;
+    private String teacherName;
     private LocalDateTime createdAt;
 }

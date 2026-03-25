@@ -28,7 +28,7 @@ public class Adresse {
     @Builder.Default
     private String pays = "Maroc";
 
-    public String formatComplet() {
+    public String adresseComplete() {
         return rue + ", " + codePostal + " " + ville + ", " + pays;
     }
 }

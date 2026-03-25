@@ -89,15 +89,15 @@ public class LiveController {
 
     @GetMapping("/sessions/status/{status}")
     public ResponseEntity<Page<LiveSessionResponse>> getByStatus(
-            @PathVariable LiveSessionStatus status,
+            @PathVariable("status") LiveSessionStatus status,
             @PageableDefault(size = 20, sort = "scheduledStartAt") Pageable pageable) {
         return ResponseEntity.ok(liveSessionService.getByStatus(status, pageable));
     }
 
     @GetMapping("/sessions/scheduled")
     public ResponseEntity<List<LiveSessionResponse>> getScheduled(
-            @RequestParam LocalDateTime start,
-            @RequestParam LocalDateTime end) {
+            @RequestParam("start") LocalDateTime start,
+            @RequestParam("end") LocalDateTime end) {
         return ResponseEntity.ok(liveSessionService.getScheduledBetween(start, end));
     }
 
@@ -105,7 +105,7 @@ public class LiveController {
     @GetMapping("/sessions/my-section")
     public ResponseEntity<Page<LiveSessionResponse>> getSessionsForMySection(
             Authentication auth,
-            @RequestParam(defaultValue = "LIVE") LiveSessionStatus status,
+            @RequestParam(value = "status", defaultValue = "LIVE") LiveSessionStatus status,
             @PageableDefault(size = 20, sort = "scheduledStartAt") Pageable pageable) {
         if (auth == null || !auth.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -115,7 +115,7 @@ public class LiveController {
     }
 
     @GetMapping("/sessions/{id}")
-    public ResponseEntity<LiveSessionResponse> getById(Authentication auth, @PathVariable String id) {
+    public ResponseEntity<LiveSessionResponse> getById(Authentication auth, @PathVariable("id") String id) {
         Section viewerSection = auth != null && auth.isAuthenticated()
                 ? userRepository.findByEmail(auth.getName()).map(User::getSection).orElse(null)
                 : null;
@@ -128,7 +128,7 @@ public class LiveController {
     @PutMapping("/sessions/{id}")
     public ResponseEntity<LiveSessionResponse> update(
             Authentication auth,
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody LiveSessionRequest request) {
         if (!canLaunchLive(auth)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -137,7 +137,7 @@ public class LiveController {
     }
 
     @DeleteMapping("/sessions/{id}")
-    public ResponseEntity<Void> delete(Authentication auth, @PathVariable String id) {
+    public ResponseEntity<Void> delete(Authentication auth, @PathVariable("id") String id) {
         if (!canLaunchLive(auth)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -146,7 +146,7 @@ public class LiveController {
     }
 
     @PostMapping("/sessions/{id}/start")
-    public ResponseEntity<LiveSessionResponse> startStream(Authentication auth, @PathVariable String id) {
+    public ResponseEntity<LiveSessionResponse> startStream(Authentication auth, @PathVariable("id") String id) {
         if (!canLaunchLive(auth)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -154,7 +154,7 @@ public class LiveController {
     }
 
     @PostMapping("/sessions/{id}/end")
-    public ResponseEntity<LiveSessionResponse> endStream(Authentication auth, @PathVariable String id) {
+    public ResponseEntity<LiveSessionResponse> endStream(Authentication auth, @PathVariable("id") String id) {
         if (!canLaunchLive(auth)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -162,7 +162,7 @@ public class LiveController {
     }
 
     @GetMapping("/sessions/{id}/comments")
-    public ResponseEntity<List<LiveCommentResponse>> getComments(Authentication auth, @PathVariable String id) {
+    public ResponseEntity<List<LiveCommentResponse>> getComments(Authentication auth, @PathVariable("id") String id) {
         Section viewerSection = auth != null && auth.isAuthenticated()
                 ? userRepository.findByEmail(auth.getName()).map(User::getSection).orElse(null)
                 : null;
@@ -175,7 +175,7 @@ public class LiveController {
     @PostMapping("/sessions/{id}/comments")
     public ResponseEntity<LiveCommentResponse> addComment(
             Authentication auth,
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody LiveCommentRequest request) {
         Section viewerSection = auth != null && auth.isAuthenticated()
                 ? userRepository.findByEmail(auth.getName()).map(User::getSection).orElse(null)
@@ -192,7 +192,7 @@ public class LiveController {
 
     @GetMapping("/public/sessions")
     public ResponseEntity<Page<LiveSessionResponse>> getPublicSessions(
-            @RequestParam(defaultValue = "LIVE") LiveSessionStatus status,
+            @RequestParam(value = "status", defaultValue = "LIVE") LiveSessionStatus status,
             @PageableDefault(size = 20, sort = "scheduledStartAt") Pageable pageable) {
         return ResponseEntity.ok(liveSessionService.getPublicSessions(status, pageable));
     }
@@ -200,7 +200,7 @@ public class LiveController {
     @GetMapping("/public/sessions/{id}")
     public ResponseEntity<LiveSessionResponse> getPublicSessionById(
             Authentication auth,
-            @PathVariable String id) {
+            @PathVariable("id") String id) {
         Section viewerSection = null;
         if (auth != null && auth.isAuthenticated()) {
             viewerSection = userRepository.findByEmail(auth.getName()).map(User::getSection).orElse(null);
@@ -211,7 +211,7 @@ public class LiveController {
     }
 
     @GetMapping("/public/sessions/{id}/comments")
-    public ResponseEntity<List<LiveCommentResponse>> getPublicSessionComments(@PathVariable String id) {
+    public ResponseEntity<List<LiveCommentResponse>> getPublicSessionComments(@PathVariable("id") String id) {
         if (liveSessionService.getPublicSessionById(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -220,7 +220,7 @@ public class LiveController {
 
     @PostMapping("/public/sessions/{id}/comments")
     public ResponseEntity<LiveCommentResponse> addPublicComment(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody LiveCommentRequest request) {
         return liveSessionService.addPublicComment(id, request)
                 .map(c -> ResponseEntity.status(HttpStatus.CREATED).body(c))

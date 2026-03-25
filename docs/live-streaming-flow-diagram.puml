@@ -1,0 +1,169 @@
+@startuml DarQuran_Live_Streaming_Flow
+
+!define RECTANGLE class
+!define CLOUD cloud
+!define DATABASE database
+!define QUEUE queue
+
+title Flux de Live Streaming DarQuran - Architecture Complète
+
+' === ACTEURS ===
+actor "Enseignant\n(Streamer)" as teacher
+actor "Admin" as admin
+actor "Élève/Public\n(Viewer)" as student
+actor "Système Email" as email
+
+' === FRONTEND ===
+RECTANGLE "Angular Frontend" as angular {
+  + Interface Live Dashboard
+  + Player HLS
+  + Chat Commentaires
+  + Gestion Sessions
+}
+
+RECTANGLE "OBS Studio" as obs {
+  + Capture Écran/Caméra
+  + Encodage H.264/AAC
+  + Push RTMP
+}
+
+RECTANGLE "Bridge WebSocket\n(Node.js)" as bridge {
+  + Réception WebM
+  + FFmpeg Transcoding
+  + Relay vers RTMP
+}
+
+' === INFRASTRUCTURE STREAMING ===
+RECTANGLE "NGINX RTMP Server" as nginx {
+  + Port 1935 (RTMP Ingestion)
+  + Port 80 (HLS Distribution)
+  + Conversion RTMP→HLS
+  + Segments TS + Playlist M3U8
+}
+
+CLOUD "Stockage Temporaire" as storage {
+  + /tmp/hls/{streamKey}/
+  + Segments .ts (1 sec)
+  + Playlist .m3u8
+}
+
+' === BACKEND API ===
+RECTANGLE "Spring Boot API" as springboot {
+  + LiveController (REST)
+  + LiveSessionService
+  + Authentication JWT
+  + Authorization Rôles
+  + Email Notifications
+}
+
+' === PERSISTANCE ===
+DATABASE "PostgreSQL" as postgres {
+  + live_sessions
+  + live_comments
+  + users
+  + sections
+}
+
+DATABASE "Redis Cache" as redis {
+  + JWT Sessions
+  + Cache données
+}
+
+CLOUD "MinIO S3" as minio {
+  + Enregistrements MP4
+  + Stockage permanent
+  + URLs publiques
+}
+
+' === FLUX PRINCIPAL ===
+
+' Étape 1: Création session
+admin -> springboot : 1. POST /api/live/sessions\n{title, streamKey, accessType}
+springboot -> postgres : Persistance session\n(status: SCHEDULED)
+springboot -> admin : Response avec URLs\n(RTMP + HLS)
+
+' Étape 2A: Streaming via OBS
+teacher -> obs : Configuration\nURL: rtmp://server:1935/live/{key}
+obs -> nginx : 2A. Flux RTMP\n(H.264 + AAC)
+
+' Étape 2B: Streaming via navigateur
+teacher -> angular : Capture MediaRecorder\n(WebM chunks)
+angular -> bridge : 2B. WebSocket\n{config + binary data}
+bridge -> nginx : FFmpeg relay\n→ RTMP
+
+' Étape 3: Conversion HLS
+nginx -> storage : 3. Génération HLS\n(.m3u8 + segments .ts)
+
+' Étape 4: Activation live
+teacher -> springboot : 4. POST /sessions/{id}/start
+springboot -> postgres : Update status: LIVE\nTimestamp: startedAt
+springboot -> email : 5. Notifications envoi\n(selon rôle + section)
+
+' Étape 5: Consultation public
+student -> angular : 6. Accès frontend
+angular -> springboot : GET /api/live/sessions\n(filtré selon droits)
+springboot -> angular : Liste sessions autorisées
+
+student -> angular : 7. Lecture live choisi
+angular -> nginx : GET /hls/{streamKey}.m3u8
+nginx -> storage : Récupération segments
+storage -> nginx : Paquets TS + playlist
+nginx -> angular : 8. Flux HLS\n(adaptive bitrate)
+
+' Étape 6: Interaction temps réel
+student -> angular : 9. Poster commentaire
+angular -> springboot : POST /sessions/{id}/comments
+springboot -> postgres : Persistance commentaire
+springboot -> angular : Confirmation
+
+angular -> springboot : 10. Polling commentaires\n(GET /sessions/{id}/comments)
+springboot -> postgres : Récupération messages
+postgres -> springboot : Liste commentaires
+springboot -> angular : Updates chat
+
+' Étape 7: Fin de live
+teacher -> obs : 11. Arrêt streaming
+obs -> nginx : Fermeture connexion RTMP
+
+teacher -> springboot : POST /sessions/{id}/end
+springboot -> postgres : Update status: ENDED\nTimestamp: endedAt
+
+nginx -> minio : 12. Upload enregistrement\n(si activé)
+springboot -> postgres : Update recordingUrl
+
+' === LÉGENDES ET NOTES ===
+note left of nginx
+  **Configuration NGINX**
+  - Application: live
+  - HLS fragments: 1s
+  - Playlist length: 4 segments
+  - CORS headers activés
+end note
+
+note right of springboot
+  **Sécurité & Permissions**
+
+  **Création/Contrôle:**
+  - SUPER_ADMIN: tous droits
+  - ADMIN_SECTION: même section
+  - ENSEIGNANT: devient animateur
+
+  **Accès viewing:**
+  - EXTERNAL: public
+  - INTERNAL: auth + même section
+end note
+
+note bottom of postgres
+  **Types d'accès Live:**
+
+  • **LiveAccessType.EXTERNAL**
+    → Accessible à tous
+
+  • **LiveAccessType.INTERNAL**
+    → Authentification + section matching
+
+  **Statuts session:**
+  SCHEDULED → LIVE → ENDED
+end note
+
+@enduml

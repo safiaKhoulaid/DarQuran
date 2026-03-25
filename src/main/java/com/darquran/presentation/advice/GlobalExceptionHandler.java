@@ -3,12 +3,15 @@ package com.darquran.presentation.advice;
 import com.darquran.application.dto.error.ErrorResponse;
 import com.darquran.domain.exception.InvalidOTPException;
 import com.darquran.domain.exception.UserNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,6 +21,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /*========== BUILDER DE RESPONSE ERROR ==========*/
 
@@ -61,6 +66,11 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, "Requête invalide", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex, HttpServletRequest request) {
+        return buildResponse(HttpStatus.NOT_FOUND, "Ressource introuvable", ex.getMessage(), request);
+    }
+
     /*============ ERREURS DE VALIDATION DTO ===========*/
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -94,6 +104,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, HttpServletRequest request) {
+        log.error("Erreur non gérée sur {} : {}", request.getRequestURI(), ex.getMessage(), ex);
         return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur Serveur", "Une erreur inattendue est survenue", request);
     }
 }

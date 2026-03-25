@@ -38,19 +38,19 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CourseResponse> getCourseById(@PathVariable String id) {
+    public ResponseEntity<CourseResponse> getCourseById(@PathVariable("id") String id) {
         return ResponseEntity.ok(courseService.getCourseById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<CourseResponse> updateCourse(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody CourseRequest request) {
         return ResponseEntity.ok(courseService.updateCourse(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourse(@PathVariable String id) {
+    public ResponseEntity<Void> deleteCourse(@PathVariable("id") String id) {
         courseService.deleteCourse(id);
         return ResponseEntity.noContent().build();
     }
@@ -58,7 +58,7 @@ public class CourseController {
     /* ===== LESSONS (nested under course) ===== */
 
     @GetMapping("/{courseId}/lessons")
-    public ResponseEntity<List<LessonResponse>> getLessonsByCourse(@PathVariable String courseId) {
+    public ResponseEntity<List<LessonResponse>> getLessonsByCourse(@PathVariable("courseId") String courseId) {
         return ResponseEntity.ok(lessonService.getLessonsByCourse(courseId));
     }
 }

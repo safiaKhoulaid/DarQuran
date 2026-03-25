@@ -4,7 +4,9 @@ import com.darquran.application.dto.courses.CourseRequest;
 import com.darquran.application.dto.courses.CourseResponse;
 import com.darquran.application.mapper.courses.CourseMapper;
 import com.darquran.application.service.CourseService;
+import com.darquran.application.service.UserNotificationService;
 import com.darquran.domain.model.entities.course.Course;
+import com.darquran.domain.model.enums.courses.CourseStatus;
 import com.darquran.domain.repository.CourseRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository repository;
     private final CourseMapper mapper;
+    private final UserNotificationService userNotificationService;
 
     @Override
     @Transactional
@@ -26,7 +29,11 @@ public class CourseServiceImpl implements CourseService {
         Course course = mapper.toEntity(request);
         String baseSlug = request.getTitle().toLowerCase().replace(" ", "-");
         course.setSlug(baseSlug + "-" + java.util.UUID.randomUUID().toString().substring(0, 5));
-        return mapper.toResponse(repository.save(course));
+        Course saved = repository.save(course);
+        if (saved.getStatus() == CourseStatus.PUBLISHED) {
+            userNotificationService.dispatchCoursePublished(saved);
+        }
+        return mapper.toResponse(saved);
     }
 
     @Override
@@ -46,8 +53,13 @@ public class CourseServiceImpl implements CourseService {
     public CourseResponse updateCourse(String id, CourseRequest request) {
         Course course = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
+        CourseStatus previousStatus = course.getStatus();
         mapper.updateEntityFromRequest(request, course);
-        return mapper.toResponse(repository.save(course));
+        Course saved = repository.save(course);
+        if (saved.getStatus() == CourseStatus.PUBLISHED && previousStatus != CourseStatus.PUBLISHED) {
+            userNotificationService.dispatchCoursePublished(saved);
+        }
+        return mapper.toResponse(saved);
     }
 
     @Override

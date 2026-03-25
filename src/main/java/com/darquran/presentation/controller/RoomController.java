@@ -24,7 +24,7 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoomResponse> getById(@PathVariable String id) {
+    public ResponseEntity<RoomResponse> getById(@PathVariable("id") String id) {
         return ResponseEntity.ok(roomService.getById(id));
     }
 
@@ -35,13 +35,13 @@ public class RoomController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RoomResponse> update(
-            @PathVariable String id,
+            @PathVariable("id") String id,
             @Valid @RequestBody RoomRequest request) {
         return ResponseEntity.ok(roomService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         roomService.delete(id);
         return ResponseEntity.noContent().build();
     }

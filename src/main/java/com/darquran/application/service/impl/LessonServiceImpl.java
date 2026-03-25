@@ -36,6 +36,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<LessonResponse> getLessonsByCourse(String courseId) {
         if (!courseRepository.existsById(courseId)) {
             throw new EntityNotFoundException("Course not found with id: " + courseId);

@@ -12,4 +12,6 @@ public interface LiveCommentRepository extends JpaRepository<LiveComment, String
     List<LiveComment> findByLiveSessionIdOrderByCreatedAtAsc(String liveSessionId);
 
     Page<LiveComment> findByLiveSessionIdOrderByCreatedAtDesc(String liveSessionId, Pageable pageable);
+
+    List<LiveComment> findByAuthorId(String authorId);
 }

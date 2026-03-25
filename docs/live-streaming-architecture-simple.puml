@@ -1,0 +1,123 @@
+@startuml DarQuran_Architecture_Simple
+
+!define C_USER #E3F2FD
+!define C_FRONTEND #E8F5E8
+!define C_STREAMING #FFF3E0
+!define C_BACKEND #F3E5F5
+!define C_DATA #FFEBEE
+
+skinparam backgroundColor white
+skinparam componentStyle rectangle
+skinparam rectangle {
+    roundCorner 15
+    FontSize 12
+    FontStyle bold
+}
+
+title 🏗️ Architecture Live Streaming DarQuran
+
+' === COUCHE UTILISATEUR ===
+package "👥 Utilisateurs" C_USER {
+    [👨‍🏫 Enseignant] as teacher
+    [👨‍🎓 Élève] as student
+}
+
+' === COUCHE FRONTEND ===
+package "💻 Applications Client" C_FRONTEND {
+    [🖥️ Angular WebApp\nPort: Browser] as webapp
+    [🎥 OBS Studio\nStreaming Software] as obs
+}
+
+' === COUCHE STREAMING ===
+package "🎬 Infrastructure Streaming" C_STREAMING {
+    rectangle "NGINX Media Server" {
+        [📡 RTMP Receiver\nPort: 1935] as rtmp
+        [📺 HLS Distributor\nPort: 8081] as hls
+        [💾 Temp Storage\n/tmp/hls/] as temp
+    }
+}
+
+' === COUCHE BACKEND ===
+package "⚙️ Backend Services" C_BACKEND {
+    [🔗 Spring Boot API\nPort: 8080] as api
+    [📧 Notification Service] as notification
+    [🔐 Security & Auth\nJWT + Roles] as security
+}
+
+' === COUCHE DONNÉES ===
+package "💽 Persistance & Storage" C_DATA {
+    [📊 PostgreSQL\nSessions & Users\nPort: 5433] as postgres
+    [⚡ Redis Cache\nSessions & Cache\nPort: 6379] as redis
+    [📁 MinIO S3\nRecordings\nPort: 9000] as minio
+}
+
+' === CONNEXIONS PRINCIPALES ===
+
+' Utilisateurs → Frontend
+teacher --> webapp : Interface Admin
+teacher --> obs : Configuration Streaming
+student --> webapp : Interface Viewer
+
+' Frontend → Streaming
+obs --> rtmp : 🔄 **Flux RTMP**\n(H.264/AAC)
+webapp --> hls : 🔄 **Lecture HLS**\n(M3U8/TS)
+
+' Streaming interne
+rtmp --> temp : Conversion\nRTMP → HLS
+temp --> hls : Segments vidéo
+
+' Frontend → Backend
+webapp --> api : 🔄 **API REST**\n(CRUD Sessions)
+webapp --> security : Authentication
+
+' Backend → Data
+api --> postgres : Sessions Data
+api --> redis : Cache & JWT
+notification --> postgres : User Queries
+api --> minio : Recordings
+
+' Streaming → Data
+temp --> minio : Auto Upload MP4
+
+' === FLUX DE DONNÉES ===
+note as N1
+  **🔄 Flux Principal:**
+  1. Enseignant crée session (API)
+  2. OBS pousse RTMP → NGINX
+  3. NGINX convertit → HLS
+  4. Élève lit HLS via Angular
+  5. Chat via API REST
+end note
+
+note as N2
+  **🔐 Sécurité:**
+  • JWT Authentication
+  • Rôles: ADMIN/PROF/ÉLÈVE
+  • Sections: HOMME/FEMME
+  • Access: PUBLIC/PRIVÉ
+end note
+
+note as N3
+  **⚡ Performance:**
+  • Latence: ~5 secondes
+  • HLS segments: 1 sec
+  • Cache Redis: Sessions
+  • Auto-scaling: Stateless API
+end note
+
+N1 .up.> webapp
+N2 .up.> security
+N3 .up.> temp
+
+' === LÉGENDE ===
+legend bottom center
+  |= Protocole |= Usage |= Port |
+  | RTMP | Ingestion OBS → NGINX | 1935 |
+  | HLS | Diffusion NGINX → Browsers | 8081 |
+  | HTTP REST | API Frontend ↔ Backend | 8080 |
+  | PostgreSQL | Persistance données | 5433 |
+  | Redis | Cache & Sessions | 6379 |
+  | S3 | Stockage enregistrements | 9000 |
+end legend
+
+@enduml

@@ -1,5 +1,7 @@
 package com.darquran.presentation.controller;
 
+import com.darquran.support.AbstractWebMvcControllerTest;
+import com.darquran.support.DarQuranWebMvcTest;
 import com.darquran.application.dto.live.LiveSessionResponse;
 import com.darquran.application.service.LiveSessionService;
 import com.darquran.domain.model.entities.users.Teacher;
@@ -11,7 +13,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -28,8 +29,8 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(LiveController.class)
-class LiveControllerTest {
+@DarQuranWebMvcTest(LiveController.class)
+class LiveControllerTest extends AbstractWebMvcControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -114,7 +115,7 @@ class LiveControllerTest {
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test

@@ -27,6 +27,8 @@ public interface LiveSessionRepository extends JpaRepository<LiveSession, String
 
     List<LiveSession> findByUser_IdAndStatus(String userId, LiveSessionStatus status);
 
+    List<LiveSession> findByUser_Id(String userId);
+
     Page<LiveSession> findByStatusAndAccessTypeAndSection(
             LiveSessionStatus status, LiveAccessType accessType, Section section, Pageable pageable);
 

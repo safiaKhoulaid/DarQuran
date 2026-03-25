@@ -1,0 +1,98 @@
+@startuml DarQuran_Live_Simple_Flow
+
+!theme plain
+skinparam backgroundColor #FAFAFA
+skinparam roundcorner 20
+skinparam shadowing false
+
+title 📱 DarQuran Live Streaming - Flux Visuel Simple
+
+!define STEP(x) <size:16><color:white><back:#4CAF50> x </back></color></size>
+
+' === ÉTAPES VISUELLES ===
+
+rectangle "👨‍🏫 **Enseignant**" as teacher #E3F2FD {
+}
+
+rectangle "🎮 **OBS Studio**" as obs #FFF3E0 {
+    note: Configuration:\nrtmp://server:1935/live/{key}
+}
+
+rectangle "🔧 **API Spring Boot**" as api #E8F5E8 {
+    note: Gestion sessions\nAuthentification\nNotifications
+}
+
+rectangle "📡 **NGINX Server**" as nginx #FFEBEE {
+    note: RTMP → HLS\nPort 1935 → 8081
+}
+
+rectangle "👨‍🎓 **Élèves**" as students #F3E5F5 {
+    note: Angular WebApp\nPlayer HLS
+}
+
+rectangle "💾 **Base Données**" as database #F5F5F5 {
+    note: PostgreSQL + Redis + MinIO
+}
+
+' === FLUX AVEC ÉTAPES ===
+
+teacher --> api : STEP(1) **Créer Session**\nPOST /api/live/sessions\n{Title, StreamKey, AccessType}
+
+api --> database : STEP(2) **Sauvegarder**\nStatus: SCHEDULED\nGénération URLs
+
+teacher --> obs : STEP(3) **Configuration**\nURL RTMP + StreamKey\nCodecs H.264/AAC
+
+obs --> nginx : STEP(4) **Streaming RTMP**\nFlux vidéo temps réel\nIngestion Port 1935
+
+nginx --> nginx : STEP(5) **Conversion HLS**\nSegments .ts (1 sec)\nPlaylist .m3u8
+
+teacher --> api : STEP(6) **Démarrer Live**\nPOST /sessions/{id}/start\nStatut: LIVE
+
+api --> database : STEP(7) **Notifications**\nEmail aux élèves\n(selon section/rôle)
+
+students --> api : STEP(8) **Accès Sessions**\nGET /sessions/my-section\nFiltrage permissions
+
+students --> nginx : STEP(9) **Lecture HLS**\nGET /hls/{streamKey}.m3u8\nPlayer vidéo Angular
+
+students --> api : STEP(10) **Chat Interactif**\nPOST /sessions/{id}/comments\nCommentaires temps réel
+
+teacher --> api : STEP(11) **Fin Session**\nPOST /sessions/{id}/end\nStatus: ENDED
+
+nginx --> database : STEP(12) **Enregistrement**\nUpload MP4 vers S3\n(si activé)
+
+' === ANNOTATIONS ===
+
+note top of nginx
+  **🔄 Conversion Automatique**
+  RTMP (OBS) → HLS (Navigateur)
+  Latence: ~5 secondes
+  Qualité adaptative
+end note
+
+note bottom of api
+  **🔐 Sécurité**
+  JWT Authentication
+  Rôles: ADMIN/PROF/ÉLÈVE
+  Sections: HOMME/FEMME
+  Access: INTERNAL/EXTERNAL
+end note
+
+note right of database
+  **💽 Stockage**
+  • Sessions & Métadonnées
+  • Commentaires Chat
+  • Cache utilisateurs
+  • Enregistrements MP4
+end note
+
+' === LÉGENDE SIMPLE ===
+legend bottom
+  **🎯 Technologies Clés:**
+  • **Frontend:** Angular + HLS Player
+  • **Backend:** Spring Boot + PostgreSQL + Redis
+  • **Streaming:** NGINX RTMP + FFmpeg
+  • **Protocols:** RTMP (ingestion) + HLS (diffusion)
+  • **Security:** JWT + Role-based permissions
+end legend
+
+@enduml

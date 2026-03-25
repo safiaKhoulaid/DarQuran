@@ -11,14 +11,20 @@ import com.darquran.domain.model.valueobjects.Password;
 import com.darquran.domain.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+/**
+ * Legacy seeder - disabled in favor of DatabaseSeeder.
+ * Use DatabaseSeeder with @Profile("dev") for comprehensive seeding.
+ */
 @Component
 @RequiredArgsConstructor
+@Profile("legacy-seed")
 public class UserSeeder implements CommandLineRunner {
 
     private final AdminRepository adminRepository;

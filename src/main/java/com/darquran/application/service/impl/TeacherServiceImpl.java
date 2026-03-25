@@ -9,6 +9,13 @@ import com.darquran.domain.model.enums.Role;
 import com.darquran.domain.model.enums.Section;
 import com.darquran.domain.model.valueobjects.Adresse;
 import com.darquran.domain.model.valueobjects.Password;
+import com.darquran.domain.repository.LiveCommentRepository;
+import com.darquran.domain.repository.LiveSessionRepository;
+import com.darquran.domain.repository.RoomRepository;
+import com.darquran.domain.repository.ScheduleSlotRepository;
+import com.darquran.domain.repository.StudentAbsenceRepository;
+import com.darquran.domain.repository.StudentGradeRepository;
+import com.darquran.domain.repository.TeacherAbsenceRepository;
 import com.darquran.domain.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +33,13 @@ public class TeacherServiceImpl implements TeacherService {
     private final TeacherRepository teacherRepository;
     private final TeacherMapper teacherMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoomRepository roomRepository;
+    private final ScheduleSlotRepository scheduleSlotRepository;
+    private final TeacherAbsenceRepository teacherAbsenceRepository;
+    private final StudentAbsenceRepository studentAbsenceRepository;
+    private final StudentGradeRepository studentGradeRepository;
+    private final LiveSessionRepository liveSessionRepository;
+    private final LiveCommentRepository liveCommentRepository;
 
     @Override
     @Transactional
@@ -92,6 +106,30 @@ public class TeacherServiceImpl implements TeacherService {
         if (!teacherRepository.existsById(id)) {
             throw new EntityNotFoundException("Enseignant introuvable avec l'id : " + id);
         }
+
+        // Détacher l'enseignant des salles qui le référencent.
+        var rooms = roomRepository.findByTeacherId(id);
+        rooms.forEach(r -> r.setTeacher(null));
+        roomRepository.saveAll(rooms);
+
+        // Nettoyer les données liées aux créneaux de l'enseignant avant suppression.
+        var slots = scheduleSlotRepository.findByTeacherId(id);
+        if (!slots.isEmpty()) {
+            var slotIds = slots.stream().map(s -> s.getId()).toList();
+            teacherAbsenceRepository.deleteAll(teacherAbsenceRepository.findByTeacherId(id));
+            studentAbsenceRepository.deleteAll(studentAbsenceRepository.findByScheduleSlotIdIn(slotIds));
+            scheduleSlotRepository.deleteAll(slots);
+        } else {
+            teacherAbsenceRepository.deleteAll(teacherAbsenceRepository.findByTeacherId(id));
+        }
+
+        // Supprimer les notes attribuées par cet enseignant.
+        studentGradeRepository.deleteAll(studentGradeRepository.findByTeacherId(id));
+
+        // Supprimer les commentaires et sessions live liés à l'enseignant.
+        liveCommentRepository.deleteAll(liveCommentRepository.findByAuthorId(id));
+        liveSessionRepository.deleteAll(liveSessionRepository.findByUser_Id(id));
+
         teacherRepository.deleteById(id);
     }
 }

@@ -31,6 +31,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/hls", "/hls/**").permitAll()
                         .requestMatchers("/api/auth/forgot-password", "/api/auth/reset-password").permitAll()
                         .requestMatchers("/api/live/public/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/courses/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Mohim bzaf l Performance
                 .authenticationProvider(authenticationProvider)

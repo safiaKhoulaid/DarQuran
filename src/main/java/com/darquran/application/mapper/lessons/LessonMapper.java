@@ -2,12 +2,13 @@ package com.darquran.application.mapper.lessons;
 
 import com.darquran.application.dto.lessons.LessonRequest;
 import com.darquran.application.dto.lessons.LessonResponse;
+import com.darquran.application.mapper.resources.ResourceMapper;
 import com.darquran.domain.model.entities.course.Lesson;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ResourceMapper.class)
 public interface LessonMapper {
 
     @Mapping(target = "id", ignore = true)

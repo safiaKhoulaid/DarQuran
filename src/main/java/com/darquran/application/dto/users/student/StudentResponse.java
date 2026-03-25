@@ -1,5 +1,6 @@
 package com.darquran.application.dto.users.student;
 
+import com.darquran.application.dto.valueobjects.AdresseResponse;
 import com.darquran.domain.model.enums.Role;
 import com.darquran.domain.model.enums.Section;
 import lombok.AllArgsConstructor;
@@ -26,5 +27,6 @@ public class StudentResponse {
     private String photoUrl;
     private LocalDateTime createdAt;
     private Role role;
+    private AdresseResponse adresse;
 }
 

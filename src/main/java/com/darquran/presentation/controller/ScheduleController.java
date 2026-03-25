@@ -24,7 +24,7 @@ public class ScheduleController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ScheduleSlotResponse> getById(@PathVariable String id) {
+    public ResponseEntity<ScheduleSlotResponse> getById(@PathVariable("id") String id) {
         return ResponseEntity.ok(scheduleService.getById(id));
     }
 
@@ -34,22 +34,22 @@ public class ScheduleController {
     }
 
     @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<ScheduleSlotResponse>> getByRoom(@PathVariable String roomId) {
+    public ResponseEntity<List<ScheduleSlotResponse>> getByRoom(@PathVariable("roomId") String roomId) {
         return ResponseEntity.ok(scheduleService.getByRoom(roomId));
     }
 
     @GetMapping("/course/{courseId}")
-    public ResponseEntity<List<ScheduleSlotResponse>> getByCourse(@PathVariable String courseId) {
+    public ResponseEntity<List<ScheduleSlotResponse>> getByCourse(@PathVariable("courseId") String courseId) {
         return ResponseEntity.ok(scheduleService.getByCourse(courseId));
     }
 
     @GetMapping("/teacher/{teacherId}")
-    public ResponseEntity<List<ScheduleSlotResponse>> getByTeacher(@PathVariable String teacherId) {
+    public ResponseEntity<List<ScheduleSlotResponse>> getByTeacher(@PathVariable("teacherId") String teacherId) {
         return ResponseEntity.ok(scheduleService.getByTeacher(teacherId));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable String id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") String id) {
         scheduleService.delete(id);
         return ResponseEntity.noContent().build();
     }

@@ -1,0 +1,153 @@
+@startuml DarQuran_Live_Sequence_Simple
+
+!theme plain
+skinparam backgroundColor white
+skinparam sequenceMessageAlign direction
+skinparam maxMessageSize 200
+
+title 🎯 Flux de Live Streaming DarQuran - Séquence Simple
+
+actor Enseignant as teacher
+participant "Angular\nFrontend" as frontend
+participant "Spring Boot\nAPI" as api
+participant "NGINX\nRTMP" as nginx
+participant "PostgreSQL\nDB" as db
+participant "Notification\nService" as notif
+actor Élève as student
+
+== 📝 Phase 1: Création Session ==
+
+teacher -> frontend : Créer nouveau live
+activate frontend
+
+frontend -> api : POST /api/live/sessions\n{title, streamKey, accessType}
+activate api
+
+api -> db : INSERT live_session\n(status: SCHEDULED)
+activate db
+db -> api : Session créée
+deactivate db
+
+api -> frontend : URLs générées:\n• RTMP: rtmp://server:1935/live/{key}\n• HLS: http://server:8081/hls/{key}.m3u8
+deactivate api
+
+frontend -> teacher : Configuration affichée
+deactivate frontend
+
+== 🎥 Phase 2: Démarrage Streaming ==
+
+teacher -> teacher : Configure OBS\nURL RTMP + StreamKey
+
+teacher -> nginx : OBS pousse flux RTMP\n(H.264 + AAC)
+activate nginx
+
+nginx -> nginx : Conversion automatique\nRTMP → HLS\n(segments .ts + playlist .m3u8)
+
+== ✅ Phase 3: Activation Live ==
+
+teacher -> frontend : Clic "Démarrer Live"
+activate frontend
+
+frontend -> api : POST /api/live/sessions/{id}/start
+activate api
+
+api -> db : UPDATE status = 'LIVE'\nstartedAt = NOW()
+activate db
+db -> api : Confirmé
+deactivate db
+
+api -> notif : dispatchLiveStarted(session)
+activate notif
+notif -> notif : Calcul destinataires\n(selon rôle + section)
+notif -> student : 📧 Email: "Live commencé"\navec lien direct
+deactivate notif
+
+api -> frontend : Session démarrée ✅
+deactivate api
+frontend -> teacher : "Live actif"
+deactivate frontend
+
+== 📺 Phase 4: Visualisation Élèves ==
+
+student -> frontend : Accès plateforme
+activate frontend
+
+frontend -> api : GET /api/live/sessions/my-section\n?status=LIVE
+activate api
+
+api -> db : SELECT sessions WHERE\n(section = user.section OR accessType = 'EXTERNAL')\nAND status = 'LIVE'
+activate db
+db -> api : Liste sessions autorisées
+deactivate db
+
+api -> frontend : Sessions disponibles
+deactivate api
+
+student -> frontend : Clic sur live choisi
+frontend -> nginx : GET /hls/{streamKey}.m3u8
+activate nginx
+
+nginx -> frontend : Playlist M3U8 +\nSegments vidéo .ts
+deactivate nginx
+
+frontend -> student : 🎬 Lecture vidéo en cours
+deactivate frontend
+
+== 💬 Phase 5: Chat Interaction ==
+
+student -> frontend : Écrire commentaire
+activate frontend
+
+frontend -> api : POST /api/live/sessions/{id}/comments\n{content: "Question..."}
+activate api
+
+api -> db : INSERT live_comment\n(author, content, timestamp)
+activate db
+db -> api : Commentaire sauvé
+deactivate db
+
+api -> frontend : Commentaire publié ✅
+deactivate api
+
+frontend -> api : Polling GET /comments\n(toutes les 3 secondes)
+activate api
+api -> db : SELECT commentaires récents
+activate db
+db -> api : Liste messages
+deactivate db
+api -> frontend : Updates chat
+deactivate api
+
+frontend -> student : 💭 Chat mis à jour
+deactivate frontend
+
+== 🔚 Phase 6: Fin de Session ==
+
+teacher -> nginx : Arrêt OBS\n(fermeture connexion RTMP)
+nginx -> nginx : Détection déconnexion\nCleanup segments HLS
+
+teacher -> frontend : Terminer session
+activate frontend
+
+frontend -> api : POST /api/live/sessions/{id}/end
+activate api
+
+api -> db : UPDATE status = 'ENDED'\nendedAt = NOW()
+activate db
+db -> api : Session fermée
+deactivate db
+
+api -> frontend : Live terminé ✅
+deactivate api
+
+frontend -> teacher : "Session clôturée"
+deactivate frontend
+
+note over nginx
+  **Auto-Processing**
+  • Enregistrement MP4 (si activé)
+  • Upload vers MinIO S3
+  • Cleanup fichiers temporaires
+end note
+
+@enduml

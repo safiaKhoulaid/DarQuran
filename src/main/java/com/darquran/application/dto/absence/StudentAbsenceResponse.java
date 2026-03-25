@@ -24,6 +24,8 @@ public class StudentAbsenceResponse {
     private AbsenceStatus status;
     private String justificationText;
     private String justificationFileUrl;
+    private String courseTitle;
+    private String teacherName;
     private LocalDateTime createdAt;
 }
 

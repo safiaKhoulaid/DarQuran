@@ -6,6 +6,9 @@ import com.darquran.application.service.RoomService;
 import com.darquran.domain.model.entities.school.Room;
 import com.darquran.domain.model.entities.users.Teacher;
 import com.darquran.domain.repository.RoomRepository;
+import com.darquran.domain.repository.ScheduleSlotRepository;
+import com.darquran.domain.repository.StudentAbsenceRepository;
+import com.darquran.domain.repository.TeacherAbsenceRepository;
 import com.darquran.domain.repository.TeacherRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,9 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomRepository roomRepository;
     private final TeacherRepository teacherRepository;
+    private final ScheduleSlotRepository scheduleSlotRepository;
+    private final StudentAbsenceRepository studentAbsenceRepository;
+    private final TeacherAbsenceRepository teacherAbsenceRepository;
 
     @Override
     @Transactional
@@ -65,8 +71,13 @@ public class RoomServiceImpl implements RoomService {
         if (request.getCapacity() != null) {
             room.setCapacity(request.getCapacity());
         }
-        // Affectation enseignant : null ou vide = retirer l'enseignant
-        assignTeacherIfValid(room, request.getTeacherId());
+        // En update:
+        // - teacherId absent (null) => ne pas toucher l'affectation actuelle
+        // - teacherId vide => retirer l'enseignant
+        // - teacherId renseigné => affecter si section compatible
+        if (request.getTeacherId() != null) {
+            assignTeacherIfValid(room, request.getTeacherId());
+        }
         room = roomRepository.save(room);
         return toResponse(room);
     }
@@ -77,6 +88,15 @@ public class RoomServiceImpl implements RoomService {
         if (!roomRepository.existsById(id)) {
             throw new EntityNotFoundException("Room not found: " + id);
         }
+
+        var slots = scheduleSlotRepository.findByRoomId(id);
+        if (!slots.isEmpty()) {
+            var slotIds = slots.stream().map(s -> s.getId()).toList();
+            studentAbsenceRepository.deleteAll(studentAbsenceRepository.findByScheduleSlotIdIn(slotIds));
+            slotIds.forEach(slotId -> teacherAbsenceRepository.deleteAll(teacherAbsenceRepository.findByScheduleSlotId(slotId)));
+            scheduleSlotRepository.deleteAll(slots);
+        }
+
         roomRepository.deleteById(id);
     }
 
@@ -88,8 +108,11 @@ public class RoomServiceImpl implements RoomService {
             room.setTeacher(null);
             return;
         }
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new EntityNotFoundException("Teacher not found: " + teacherId));
+        Teacher teacher = teacherRepository.findById(teacherId).orElse(null);
+        if (teacher == null) {
+            room.setTeacher(null);
+            return;
+        }
         if (teacher.getSection() != null && teacher.getSection().equals(room.getSection())) {
             room.setTeacher(teacher);
         } else {

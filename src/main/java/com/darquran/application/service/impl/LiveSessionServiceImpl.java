@@ -6,8 +6,8 @@ import com.darquran.application.dto.live.LiveSessionRequest;
 import com.darquran.application.dto.live.LiveSessionResponse;
 import com.darquran.application.mapper.live.LiveCommentMapper;
 import com.darquran.application.mapper.live.LiveSessionMapper;
-import com.darquran.application.service.EmailService;
 import com.darquran.application.service.LiveSessionService;
+import com.darquran.application.service.UserNotificationService;
 import com.darquran.domain.model.entities.live.LiveComment;
 import com.darquran.domain.model.entities.live.LiveSession;
 import com.darquran.domain.model.entities.users.User;
@@ -40,16 +40,13 @@ public class LiveSessionServiceImpl implements LiveSessionService {
     private final UserRepository userRepository;
     private final LiveSessionMapper liveSessionMapper;
     private final LiveCommentMapper liveCommentMapper;
-    private final EmailService emailService;
+    private final UserNotificationService userNotificationService;
 
     @Value("${app.live.hls-base-url:http://localhost:8081/hls}")
     private String hlsBaseUrl;
 
     @Value("${app.live.rtmp-server-url:rtmp://localhost:1935/live}")
     private String rtmpServerUrl;
-
-    @Value("${app.front-url:}")
-    private String frontUrl;
 
     /** Remplit les URLs de streaming (RTMP pour OBS, HLS déjà dans l'entité) dans la réponse. */
     private LiveSessionResponse withStreamingUrls(LiveSessionResponse response) {
@@ -163,32 +160,10 @@ public class LiveSessionServiceImpl implements LiveSessionService {
         LiveSession saved = liveSessionRepository.save(entity);
 
         if (wasScheduled) {
-            sendLiveStartedNotificationToAllUsers(saved);
+            userNotificationService.dispatchLiveStarted(saved);
         }
 
         return withStreamingUrls(liveSessionMapper.toResponse(saved));
-    }
-
-    /** Envoie un email à tous les utilisateurs pour les informer qu'un live planifié a commencé. */
-    private void sendLiveStartedNotificationToAllUsers(LiveSession session) {
-        String subject = "DarQuran - Un live a commencé : " + session.getTitle();
-        String linkLine = (frontUrl != null && !frontUrl.isBlank())
-                ? "\n\nRegardez le live ici : " + frontUrl
-                : "";
-        String body = """
-                Bonjour,
-
-                Le live « %s » a commencé. Connectez-vous à la plateforme pour le regarder.%s
-
-                — Équipe DarQuran
-                """.formatted(session.getTitle(), linkLine);
-
-        List<User> recipients = userRepository.findAll().stream()
-                .filter(u -> u.getEmail() != null && !u.getEmail().isBlank())
-                .filter(u -> session.getSection() == null || (u.getSection() != null && u.getSection() == session.getSection()))
-                .toList();
-        recipients.forEach(u -> emailService.sendEmail(u.getEmail(), subject, body));
-        log.info("Notification « live démarré » envoyée à {} utilisateur(s) (section {}) pour la session {}", recipients.size(), session.getSection(), session.getId());
     }
 
     @Override
