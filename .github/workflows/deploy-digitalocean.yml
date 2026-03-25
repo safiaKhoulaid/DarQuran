@@ -69,7 +69,7 @@ jobs:
             fi
 
             if [ -z "$REPO_URL" ]; then
-              REPO_URL="https://github.com/${REPO_NAME}.git"
+              REPO_URL="https://github.com/safiaKhoulaid/DarQuran"
             fi
 
             # Prépare le dossier applicatif
