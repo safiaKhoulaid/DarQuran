@@ -5,7 +5,7 @@ Service Node.js qui reçoit le flux WebM du navigateur via WebSocket et le relai
 ## Prérequis
 
 - **Node.js** >= 18
-- **ffmpeg** installé et disponible dans le `PATH`
+- **FFmpeg** : après `npm install`, le paquet **ffmpeg-static** fournit un binaire (surtout utile sous **Windows** sans FFmpeg dans le PATH). Sinon installez FFmpeg système et utilisez `FFMPEG_PATH` ou le PATH.
 
 ## Installation
 
@@ -24,6 +24,7 @@ Variables d'environnement optionnelles :
 
 - `WS_PORT` : port du serveur WebSocket (défaut : `9090`)
 - `RTMP_URL` : URL de base RTMP (défaut : `rtmp://localhost:1935/live`)
+- `FFMPEG_PATH` : chemin absolu vers `ffmpeg` (ex. `C:\ffmpeg\bin\ffmpeg.exe` sous Windows, ou `/usr/bin/ffmpeg` en Docker Alpine)
 
 Exemple :
 

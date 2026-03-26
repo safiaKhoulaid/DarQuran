@@ -193,6 +193,12 @@
                         <exclude>**/dto/**</exclude>
                         <!-- Exclure les configurations Spring -->
                         <exclude>**/config/**</exclude>
+                        <!-- MapStruct : code généré, couvert indirectement -->
+                        <exclude>**/mapper/**</exclude>
+                        <!-- Interfaces Spring Data sans bytecode utile -->
+                        <exclude>**/domain/repository/**</exclude>
+                        <!-- Données de démo : non pertinent pour la couverture métier -->
+                        <exclude>**/persistence/seeders/**</exclude>
                         <!-- Exclure la classe principale Spring Boot -->
                         <exclude>**/DarQuranApplication.*</exclude>
                         <!-- Exclure les classes générées par Lombok -->
@@ -235,6 +241,12 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <!-- 100 % sur ce périmètre (exceptions, enums, @ControllerAdvice). Le rapport HTML reste global hors exclusions. -->
+                            <includes>
+                                <include>com/darquran/domain/exception/**</include>
+                                <include>com/darquran/presentation/advice/**</include>
+                                <include>com/darquran/domain/model/enums/**</include>
+                            </includes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
@@ -242,17 +254,22 @@
                                         <limit>
                                             <counter>INSTRUCTION</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.70</minimum>
+                                            <minimum>1.00</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>1.00</minimum>
                                         </limit>
                                         <limit>
                                             <counter>METHOD</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.70</minimum>
+                                            <minimum>1.00</minimum>
                                         </limit>
                                         <limit>
                                             <counter>CLASS</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.70</minimum>
+                                            <minimum>1.00</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

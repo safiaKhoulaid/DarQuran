@@ -6,6 +6,8 @@ import com.darquran.application.service.TeacherService;
 import com.darquran.domain.model.enums.Section;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +32,7 @@ public class TeacherController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TeacherResponse>> getAllBySection(@RequestParam(name = "section", required = false) Section section) {
+    public ResponseEntity<List<TeacherResponse>> getAllBySection(@RequestParam(name = "section", required = false) Section section ) {
         return ResponseEntity.ok(teacherService.getAllBySection(section));
     }
 

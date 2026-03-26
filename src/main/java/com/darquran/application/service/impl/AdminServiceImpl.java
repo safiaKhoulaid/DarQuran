@@ -31,6 +31,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional
     public AdminResponse create(AdminRequest request) {
+
         Admin admin = adminMapper.toEntity(request);
 
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
@@ -43,12 +44,12 @@ public class AdminServiceImpl implements AdminService {
 
         Admin saved = adminRepository.save(admin);
 
-        // Envoi d'un email de bienvenue en arabe avec ses identifiants
+        // Envoi d'un email de bienvenue
         String subject = "مرحبا بك كمسؤول في دار القرآن";
         String body = """
                 السلام عليكم ورحمة الله وبركاته،
 
-                تم إنشاء حساب مسؤول (أدمن) لك في نظام إدارة معهد دار القرآن.
+                تم إنشاء حساب مسؤول  لك في نظام إدارة معهد دار القرآن.
 
                 تفاصيل حسابك:
                 البريد الإلكتروني: %s

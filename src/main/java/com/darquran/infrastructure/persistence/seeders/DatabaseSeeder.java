@@ -334,70 +334,70 @@ public class DatabaseSeeder implements CommandLineRunner {
         List<Course> courses = new ArrayList<>();
 
         courses.add(Course.builder()
-                .title("Tajwid - Les Regles de Base")
+                .title("التجويد - القواعد الأساسية")
                 .slug("tajwid-regles-base")
-                .description("Apprenez les regles fondamentales du Tajwid pour une recitation correcte du Coran. Ce cours couvre les bases essentielles pour les debutants.")
-                .miniature("https://storage.darquran.com/courses/tajwid-base.jpg")
+                .description("تعلّم قواعد التجويد الأساسية لتحسين تلاوتك للقرآن الكريم بشكل صحيح ومنهجي.")
+                .miniature("https://images.unsplash.com/photo-1609599006353-e629aaabfeae?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(true)
                 .status(CourseStatus.PUBLISHED)
                 .level(CourseLevel.BEGINNER)
                 .build());
 
         courses.add(Course.builder()
-                .title("Hifz - Memorisation Juz Amma")
+                .title("الحفظ - جزء عم")
                 .slug("hifz-juz-amma")
-                .description("Programme complet de memorisation du Juz Amma (30eme partie du Coran) avec techniques de revision et de consolidation.")
-                .miniature("https://storage.darquran.com/courses/hifz-juz-amma.jpg")
+                .description("برنامج متكامل لحفظ جزء عم مع خطة مراجعة يومية وتثبيت الحفظ.")
+                .miniature("https://images.unsplash.com/photo-1519817650390-64a93db511aa?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(true)
                 .status(CourseStatus.PUBLISHED)
                 .level(CourseLevel.BEGINNER)
                 .build());
 
         courses.add(Course.builder()
-                .title("Tajwid Avance - Ahkam Al Noon")
+                .title("التجويد المتقدم - أحكام النون الساكنة والتنوين")
                 .slug("tajwid-avance-noon")
-                .description("Cours approfondi sur les regles du Noon Sakinah et Tanwin, avec exercices pratiques et applications.")
-                .miniature("https://storage.darquran.com/courses/tajwid-noon.jpg")
+                .description("دراسة متقدمة لأحكام النون الساكنة والتنوين مع تطبيقات عملية وتمارين تلاوة.")
+                .miniature("https://images.unsplash.com/photo-1542810634-71277d95dcbb?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(false)
                 .status(CourseStatus.PUBLISHED)
                 .level(CourseLevel.INTERMEDIATE)
                 .build());
 
         courses.add(Course.builder()
-                .title("Hifz - Memorisation Juz Tabarak")
+                .title("الحفظ - جزء تبارك")
                 .slug("hifz-juz-tabarak")
-                .description("Programme de memorisation du Juz Tabarak (29eme partie) avec methode progressive et revision systematique.")
-                .miniature("https://storage.darquran.com/courses/hifz-juz-tabarak.jpg")
+                .description("خطة حفظ تدريجية لجزء تبارك مع ربط الآيات وفهم المعاني العامة.")
+                .miniature("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(false)
                 .status(CourseStatus.PUBLISHED)
                 .level(CourseLevel.INTERMEDIATE)
                 .build());
 
         courses.add(Course.builder()
-                .title("Tajwid Expert - Makhraj Al Huruf")
+                .title("التجويد الاحترافي - مخارج الحروف")
                 .slug("tajwid-expert-makhraj")
-                .description("Maitrisez les points d'articulation des lettres arabes avec precision. Cours avance pour perfectionner votre prononciation.")
-                .miniature("https://storage.darquran.com/courses/tajwid-makhraj.jpg")
+                .description("إتقان مخارج الحروف وصفاتها بدقة عالية لمن يريد الاحتراف في التلاوة.")
+                .miniature("https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(false)
                 .status(CourseStatus.PUBLISHED)
                 .level(CourseLevel.ADVANCED)
                 .build());
 
         courses.add(Course.builder()
-                .title("Sciences du Coran - Introduction")
+                .title("علوم القرآن - مدخل")
                 .slug("sciences-coran-intro")
-                .description("Decouvrez les sciences coraniques: revelation, compilation, interpretation et miracle linguistique du Coran.")
-                .miniature("https://storage.darquran.com/courses/sciences-coran.jpg")
+                .description("مدخل مبسّط إلى علوم القرآن: النزول، الجمع، التفسير، وأصول التعامل مع النص القرآني.")
+                .miniature("https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(true)
                 .status(CourseStatus.DRAFT)
                 .level(CourseLevel.BEGINNER)
                 .build());
 
         courses.add(Course.builder()
-                .title("Lecture Warsh")
+                .title("قراءة ورش")
                 .slug("lecture-warsh")
-                .description("Apprenez la lecture selon la transmission de Warsh an Nafi, largement utilisee en Afrique du Nord.")
-                .miniature("https://storage.darquran.com/courses/lecture-warsh.jpg")
+                .description("التعرّف على أصول قراءة ورش عن نافع وتطبيقاتها في التلاوة اليومية.")
+                .miniature("https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80")
                 .isPublic(false)
                 .status(CourseStatus.ARCHIVED)
                 .level(CourseLevel.ADVANCED)
@@ -412,41 +412,41 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // Lessons for Tajwid Base course
         Course tajwidBase = courses.get(0);
-        lessons.add(createLesson("Introduction au Tajwid", "Decouvrez l'importance du Tajwid et son role dans la recitation du Coran.", 1, tajwidBase));
-        lessons.add(createLesson("Les lettres solaires et lunaires", "Apprenez la difference entre Al-Huruf Ash-Shamsiyya et Al-Huruf Al-Qamariyya.", 2, tajwidBase));
-        lessons.add(createLesson("Al-Isti'adha et Al-Basmala", "Comment commencer la recitation avec la formule de refuge et la Basmala.", 3, tajwidBase));
-        lessons.add(createLesson("Les signes de pause (Waqf)", "Comprendre les differents signes de pause dans le Mushaf.", 4, tajwidBase));
+        lessons.add(createLesson("مقدمة في علم التجويد", "التعرّف على معنى التجويد وأهميته في تحسين القراءة.", 1, tajwidBase));
+        lessons.add(createLesson("الحروف الشمسية والقمرية", "التفريق بين الحروف الشمسية والقمرية مع أمثلة تطبيقية.", 2, tajwidBase));
+        lessons.add(createLesson("الاستعاذة والبسملة", "كيفية البدء الصحيح بالتلاوة مع أحكام الاستعاذة والبسملة.", 3, tajwidBase));
+        lessons.add(createLesson("علامات الوقف", "فهم علامات الوقف في المصحف وكيفية التعامل معها أثناء التلاوة.", 4, tajwidBase));
 
         // Lessons for Hifz Juz Amma
         Course hifzJuzAmma = courses.get(1);
-        lessons.add(createLesson("Sourate Al-Fatiha", "Memorisation et tajwid de la sourate Al-Fatiha.", 1, hifzJuzAmma));
-        lessons.add(createLesson("Sourate An-Nas", "Memorisation et explication de la sourate An-Nas.", 2, hifzJuzAmma));
-        lessons.add(createLesson("Sourate Al-Falaq", "Memorisation et explication de la sourate Al-Falaq.", 3, hifzJuzAmma));
-        lessons.add(createLesson("Sourate Al-Ikhlas", "Memorisation et tafsir de la sourate Al-Ikhlas.", 4, hifzJuzAmma));
-        lessons.add(createLesson("Sourate Al-Masad", "Memorisation de la sourate Al-Masad et contexte de revelation.", 5, hifzJuzAmma));
+        lessons.add(createLesson("سورة الفاتحة", "حفظ سورة الفاتحة مع ضبط مخارج الحروف وأحكام التلاوة.", 1, hifzJuzAmma));
+        lessons.add(createLesson("سورة الناس", "حفظ سورة الناس مع شرح المعاني الإجمالية.", 2, hifzJuzAmma));
+        lessons.add(createLesson("سورة الفلق", "حفظ سورة الفلق وتدريب عملي على التكرار الصحيح.", 3, hifzJuzAmma));
+        lessons.add(createLesson("سورة الإخلاص", "حفظ سورة الإخلاص مع التنبيه على الأخطاء الشائعة.", 4, hifzJuzAmma));
+        lessons.add(createLesson("سورة المسد", "حفظ سورة المسد وفهم سياقها العام.", 5, hifzJuzAmma));
 
         // Lessons for Tajwid Avance
         Course tajwidAvance = courses.get(2);
-        lessons.add(createLesson("Idgham avec Ghunna", "Les regles de l'assimilation avec nasalisation.", 1, tajwidAvance));
-        lessons.add(createLesson("Idgham sans Ghunna", "Les regles de l'assimilation sans nasalisation.", 2, tajwidAvance));
-        lessons.add(createLesson("Ikhfa Haqiqi", "La dissimulation veritable du Noon Sakin.", 3, tajwidAvance));
-        lessons.add(createLesson("Iqlab", "La conversion du Noon en Mim devant Ba.", 4, tajwidAvance));
-        lessons.add(createLesson("Izhar Halqi", "La prononciation claire avec les lettres gutturales.", 5, tajwidAvance));
+        lessons.add(createLesson("الإدغام بغنة", "أحكام الإدغام بغنة مع كلمات تدريبية من القرآن.", 1, tajwidAvance));
+        lessons.add(createLesson("الإدغام بلا غنة", "تطبيقات الإدغام بلا غنة وأمثلة من السور القصيرة.", 2, tajwidAvance));
+        lessons.add(createLesson("الإخفاء الحقيقي", "تعريف الإخفاء الحقيقي ومراتبه العملية.", 3, tajwidAvance));
+        lessons.add(createLesson("الإقلاب", "مواضع الإقلاب وكيفية نطق النون ميماً مخفاة قبل الباء.", 4, tajwidAvance));
+        lessons.add(createLesson("الإظهار الحلقي", "أحكام الإظهار الحلقي عند حروف الحلق الستة.", 5, tajwidAvance));
 
         // Lessons for Hifz Juz Tabarak
         Course hifzTabarak = courses.get(3);
-        lessons.add(createLesson("Sourate Al-Mulk (1-10)", "Premiere partie de la sourate Al-Mulk.", 1, hifzTabarak));
-        lessons.add(createLesson("Sourate Al-Mulk (11-20)", "Deuxieme partie de la sourate Al-Mulk.", 2, hifzTabarak));
-        lessons.add(createLesson("Sourate Al-Mulk (21-30)", "Troisieme partie de la sourate Al-Mulk.", 3, hifzTabarak));
-        lessons.add(createLesson("Sourate Al-Qalam", "Memorisation de la sourate Al-Qalam.", 4, hifzTabarak));
+        lessons.add(createLesson("سورة الملك (1-10)", "حفظ الآيات الأولى من سورة الملك مع مراجعة يومية.", 1, hifzTabarak));
+        lessons.add(createLesson("سورة الملك (11-20)", "استكمال حفظ سورة الملك مع تثبيت المقاطع.", 2, hifzTabarak));
+        lessons.add(createLesson("سورة الملك (21-30)", "إتمام السورة مع تقييم مستوى الضبط.", 3, hifzTabarak));
+        lessons.add(createLesson("سورة القلم", "حفظ مقاطع مختارة من سورة القلم وفق خطة أسبوعية.", 4, hifzTabarak));
 
         // Lessons for Tajwid Expert
         Course tajwidExpert = courses.get(4);
-        lessons.add(createLesson("Makhraj Al-Jawf", "Le point d'articulation du creux (lettres Madd).", 1, tajwidExpert));
-        lessons.add(createLesson("Makhraj Al-Halq", "Les points d'articulation de la gorge.", 2, tajwidExpert));
-        lessons.add(createLesson("Makhraj Al-Lisan", "Les points d'articulation de la langue.", 3, tajwidExpert));
-        lessons.add(createLesson("Makhraj Ash-Shafatan", "Les points d'articulation des levres.", 4, tajwidExpert));
-        lessons.add(createLesson("Makhraj Al-Khayshum", "Le point d'articulation nasal.", 5, tajwidExpert));
+        lessons.add(createLesson("مخرج الجوف", "شرح مخرج الجوف لحروف المد مع تمارين صوتية.", 1, tajwidExpert));
+        lessons.add(createLesson("مخرج الحلق", "مخارج الحروف الحلقية وكيفية ضبطها.", 2, tajwidExpert));
+        lessons.add(createLesson("مخرج اللسان", "تفصيل مخارج اللسان وأماكن خروج الحروف بدقة.", 3, tajwidExpert));
+        lessons.add(createLesson("مخرج الشفتين", "تمارين عملية لحروف الشفتين وضبط التفخيم والترقيق.", 4, tajwidExpert));
+        lessons.add(createLesson("مخرج الخيشوم", "التدريب على الغنة ومخرج الخيشوم في التلاوة.", 5, tajwidExpert));
 
         return lessonRepository.saveAll(lessons);
     }
@@ -458,31 +458,31 @@ public class DatabaseSeeder implements CommandLineRunner {
         for (int i = 0; i < lessons.size(); i++) {
             Lesson lesson = lessons.get(i);
 
-            // Add PDF resource to each lesson
+            // PDF resource with a real public file URL
             resources.add(Resource.builder()
-                    .name("Support de cours - " + lesson.getTitle())
-                    .fileUrl("https://storage.darquran.com/resources/lesson-" + (i + 1) + "-support.pdf")
+                    .name("ملف الدرس - " + lesson.getTitle())
+                    .fileUrl("https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf")
                     .type(ResourceType.PDF)
                     .size(1024L * 500 + (i * 100))
                     .lesson(lesson)
                     .build());
 
-            // Add video to some lessons
+            // Video resource with a real public file URL
             if (i % 2 == 0) {
                 resources.add(Resource.builder()
-                        .name("Video explicative - " + lesson.getTitle())
-                        .fileUrl("https://storage.darquran.com/resources/lesson-" + (i + 1) + "-video.mp4")
+                        .name("فيديو الشرح - " + lesson.getTitle())
+                        .fileUrl("https://www.w3schools.com/html/mov_bbb.mp4")
                         .type(ResourceType.VIDEO)
                         .size(1024L * 1024 * 50 + (i * 1000))
                         .lesson(lesson)
                         .build());
             }
 
-            // Add text notes to some lessons
+            // Text resource with a real public text file URL
             if (i % 3 == 0) {
                 resources.add(Resource.builder()
-                        .name("Notes complementaires - " + lesson.getTitle())
-                        .fileUrl("https://storage.darquran.com/resources/lesson-" + (i + 1) + "-notes.txt")
+                        .name("ملاحظات إضافية - " + lesson.getTitle())
+                        .fileUrl("https://raw.githubusercontent.com/EbookFoundation/free-programming-books/main/books/free-programming-books-ar.md")
                         .type(ResourceType.TEXT)
                         .size(1024L * 10 + i)
                         .lesson(lesson)
