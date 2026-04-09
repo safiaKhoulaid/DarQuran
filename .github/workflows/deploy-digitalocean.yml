@@ -57,8 +57,7 @@ jobs:
           password: ${{ secrets.DO_SSH_PASSWORD }}
           script_stop: true
           script: |
-            set -euo pipefail
-
+            set -xeuo pipefail
             APP_PATH="${{ secrets.DO_APP_PATH }}"
             REPO_NAME="${{ github.repository }}"
             REPO_URL="${{ secrets.DO_GIT_REPO_URL }}"
