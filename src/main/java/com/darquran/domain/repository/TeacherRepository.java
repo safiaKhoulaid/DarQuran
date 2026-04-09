@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface TeacherRepository extends JpaRepository<Teacher, String> {
 
-    Page<List<Teacher>> findBySection(Section section );
+    List<Teacher> findBySection(Section section );
 }

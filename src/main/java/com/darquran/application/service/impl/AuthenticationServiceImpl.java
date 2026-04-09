@@ -12,6 +12,7 @@ import com.darquran.domain.exception.UserNotFoundException;
 import com.darquran.domain.model.entities.users.Student;
 import com.darquran.domain.model.entities.users.User;
 import com.darquran.domain.model.entities.users.redis.RefreshToken;
+import com.darquran.domain.model.enums.Role;
 import com.darquran.domain.model.valueobjects.Adresse;
 import com.darquran.domain.model.valueobjects.Password;
 import com.darquran.domain.repository.UserRepository;
@@ -52,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .prenom(request.getPrenom())
                 .email(request.getEmail())
                 .password(passwordVO)
-                .role(request.getRole())
+                .role(Role.PUBLIC)
                 .section(request.getSection())
                 .telephone(request.getTelephone())
                 .adresse(new Adresse("Rue Default", "Ville", "10000", "Maroc")) // Adresse par defaut

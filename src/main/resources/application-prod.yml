@@ -10,6 +10,12 @@ spring:
     redis:
       host: ${SPRING_REDIS_HOST:redis}
       port: ${SPRING_REDIS_PORT:6379}
+  security:
+    jwt:
+      secret-key: ${JWT_SECRET}
+      expiration: 86400000
+      refresh-token:
+        expiration: 604800000
   jpa:
     hibernate:
       # update = crée/met à jour les tables au démarrage. Pour figer le schéma, passer à "validate"
